@@ -7,12 +7,14 @@ with open("inputs/day5.txt", "r") as f:
 
 ids = []
 
+# Part 1
+
 max_id = 0
 
 for d in data:
 
-    min = 0
-    max = 127
+    min_row = 0
+    max_row = 127
 
     min_col = 0
     max_col = 7
@@ -24,14 +26,13 @@ for d in data:
 
     for r in row_data:
         if r == "B":
-            min = min + int((max-min)/2) + 1
+            min_row = min_row + int((max_row - min_row) / 2) + 1
         elif r == "F":
-            max = max - int((max-min)/2) - 1
+            max_row = max_row - int((max_row - min_row) / 2) - 1
         else:
             print("invalid")
 
-    seat_id = min * 8
-
+    seat_id = min_row * 8
 
     for c in col_data:
         if c == "R":
@@ -43,17 +44,14 @@ for d in data:
 
     seat_id += min_col
 
-    #print(seat_id)
-
     ids.append(seat_id)
 
     if seat_id > max_id:
         max_id = seat_id
 
-
 print(max_id)
 
-ids.sort()
+# Part 2
 
 for i in range(0, max_id+1):
     if i-1 in ids and i+1 in ids and i not in ids:
