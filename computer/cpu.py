@@ -3,6 +3,8 @@ from typing import Union, List
 
 class Computer:
 
+    # ADD INSTRUCTIONS HERE
+
     def op_acc(self, val):
         self.registers["acc"] += int(val)
 
@@ -15,6 +17,8 @@ class Computer:
     ops = {"acc": op_acc, "nop": op_nop, "jmp": op_jmp}
     registers = {"acc": 0}
     ip = 0
+
+    instructions_original = []
 
     # [(instruction, value), (instruction, value)]
     instructions = []
@@ -36,7 +40,12 @@ class Computer:
         for d in data:
             s = d.split(" ")
 
-            self.instructions.append((s[0], s[1]))
+            self.instructions_original.append((s[0], s[1]))
+
+        self.instructions = self.instructions_original.copy()
+
+    def restart(self):
+        self.instructions = self.instructions_original.copy()
 
     def complete_on_loop(self):
         self.MARK_COMPLETED = True
