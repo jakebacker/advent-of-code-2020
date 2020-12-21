@@ -3,8 +3,8 @@ import copy
 
 data = []
 
-#with open("inputs/day20.txt", "r") as f:
-with open("test/day20.txt", "r") as f:
+with open("inputs/day20.txt", "r") as f:
+#with open("test/day20.txt", "r") as f:
     data = f.read().split("\n")  # This part may change
 
 
@@ -222,6 +222,8 @@ for n in non_unique:
         if complete:
             break
 
+placed = []
+
 # look_queue has been initialized with values, time to do things!
 while not len(look_queue) == 0:
     next_set = look_queue.pop(0)
@@ -284,6 +286,8 @@ while not len(look_queue) == 0:
                 continue
             if t in completed_list:
                 continue
+            if t in placed:
+                continue
 
             orientations = tiles_orient[t]
 
@@ -295,6 +299,7 @@ while not len(look_queue) == 0:
                     pos = ne[1]
                     grid[pos[0]][pos[1]] = (t, orientations.index(o))
                     look_queue.append((t, orientations.index(o), pos))
+                    placed.append(t)
                     completed_list.append(next_set[0])
 
     # Queue will eventually have 0 tiles in it
@@ -345,15 +350,55 @@ for r in range(0, len(image)):
         for rr in range(0, len(image[r][c])):
             image[r][c][rr] = image[r][c][rr][1:-1]  # Cut off the first and last column of each row
 
+final_image = []
 
-
-print(image)
+for i in image:
+    for y in range(0, len(i[0])):
+        line = ""
+        for x in i:
+            line += x[y]
+        final_image.append(line)
 
 # Look through different orientations to find monsters
+relative_coords = [(0, 0), (1, 1), (4, 1), (5, 0), (6, 0), (7, 1), (10, 1), (11, 0), (12, 0), (13, 1), (16, 1), (17, 0),
+                   (18, 0), (18, -1), (19, 0)]
 
-# Maybe use regex to do this
+num_monsters = 0
+
+final_image = flip_tile_vert(rot_tile(final_image))
+
+print('\n'.join(final_image))
+
+for y in range(0, len(final_image)):
+    for x in range(0, len(final_image[y])):
+        if final_image[y][x] == "#":
+
+            found = True
+            for r in relative_coords:
+                dx = x + r[0]
+                dy = y + r[1]
+
+                if 0 <= dy < len(final_image) and 0 <= dx < len(final_image[dy]):
+                    # Coords are in the board
+                    if not final_image[dy][dx] == "#":
+                        found = False
+                        break
+                else:
+                    found = False
+                    break
+            if found:
+                num_monsters += 1
+
+print(num_monsters)
 
 # num# - (15 * numMonsters) = num non-monster #
+num_blocked = 0
+for r in final_image:
+    for x in r:
+        if x == "#":
+            num_blocked += 1
+
+print(num_blocked - (15 * num_monsters))
 
 
 # This was just code to figure out what tiles can connect together
